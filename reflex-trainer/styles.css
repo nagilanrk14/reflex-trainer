@@ -1,0 +1,1123 @@
+:root {
+    --bg-base: #111111;
+    --text-primary: #ffffff;
+    --text-secondary: #aaaaaa;
+
+    --accent-red: #e10600;
+    /* F1 Red */
+    --accent-white: #ffffff;
+    --accent-dark: #1f1f1f;
+    --accent-green: #00ff00;
+    /* Start light go */
+
+    --glass-bg: rgba(31, 31, 31, 0.8);
+    --glass-border: rgba(225, 6, 0, 0.3);
+    --glass-highlight: rgba(225, 6, 0, 0.1);
+
+    --font-heading: 'Orbitron', sans-serif;
+    --font-body: 'Inter', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+/* Background Elements */
+#f1-bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -2;
+    opacity: 0.6;
+    /* Dim the video slightly so the UI pops */
+}
+
+.background-elements {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    background: radial-gradient(#2a2a2a 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.5;
+    /* Darken the carbon grid over the video */
+}
+
+/* Base Layout */
+.app-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--accent-red);
+    flex-wrap: wrap;
+    /* allow wrapping on small screens */
+    gap: 1rem;
+}
+
+.logo {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 900;
+    font-style: italic;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.highlight {
+    color: var(--accent-red);
+}
+
+/* Views Logic */
+.view {
+    display: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.view.active {
+    display: flex;
+    flex-direction: column;
+    opacity: 1;
+    transform: translateY(0);
+    flex-grow: 1;
+}
+
+/* Typography elements */
+.hero {
+    text-align: center;
+    margin-bottom: 3rem;
+    margin-top: 1rem;
+}
+
+.hero h1 {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: 4rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+.hero p {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Dashboard Grid Layout (Cards + Telemetry) */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.game-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+@media (max-width: 900px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Cards (F1 Theme) */
+.card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    /* Sharper corners */
+    border-top: 4px solid var(--accent-red);
+    /* Racing stripe */
+    padding: 2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.telemetry-card {
+    cursor: default;
+    border-top: 4px solid var(--accent-white);
+    /* White accent for telemetry */
+}
+
+.telemetry-card:hover {
+    transform: none;
+    box-shadow: none;
+    background: var(--glass-bg);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.05), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.card:hover {
+    transform: translateX(10px);
+    /* Aggressive slide */
+    background: var(--glass-highlight);
+    border-color: var(--accent-red);
+}
+
+.card-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.reaction-color {
+    color: var(--text-primary);
+}
+
+.aim-color {
+    color: var(--text-primary);
+}
+
+.card h2,
+.telemetry-card h2 {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    font-style: italic;
+    text-transform: uppercase;
+}
+
+.card p {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-size: 1rem;
+}
+
+.stats {
+    padding-top: 1rem;
+    border-top: 1px solid var(--glass-border);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    display: flex;
+    justify-content: space-between;
+}
+
+.stats strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Game Views Shared */
+.game-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.game-header h2 {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: 2rem;
+}
+
+.back-btn {
+    background: transparent;
+    border: 2px solid var(--text-secondary);
+    color: var(--text-primary);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+}
+
+.back-btn:hover {
+    background: var(--text-secondary);
+    color: var(--bg-base);
+}
+
+.game-area {
+    flex-grow: 1;
+    background: var(--accent-dark);
+    border: 2px solid var(--accent-red);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 500px;
+    transition: background-color 0.1s;
+    user-select: none;
+}
+
+/* Track Limits Penalty Flash */
+body.penalty-flash .game-area {
+    background-color: var(--accent-red) !important;
+    transition: background-color 0s;
+}
+
+/* Reaction Game Specific */
+#reaction-area {
+    cursor: pointer;
+}
+
+.reaction-prompt {
+    text-align: center;
+    pointer-events: none;
+}
+
+.reaction-prompt .icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+#reaction-area.waiting {
+    background-color: var(--accent-red);
+    border-color: var(--accent-red);
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+}
+
+#reaction-area.now {
+    background-color: var(--accent-green);
+    border-color: var(--accent-green);
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+}
+
+#reaction-area.waiting .icon,
+#reaction-area.waiting h3,
+#reaction-area.waiting p {
+    color: white;
+}
+
+#reaction-area.now .icon,
+#reaction-area.now h3,
+#reaction-area.now p {
+    color: #000;
+}
+
+#reaction-title {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    font-style: italic;
+}
+
+#reaction-desc {
+    font-size: 1.2rem;
+    opacity: 0.8;
+}
+
+/* Aim Game Specific */
+.game-area-wrapper {
+    position: relative;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.start-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(17, 17, 17, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 10;
+    transition: opacity 0.3s;
+}
+
+.start-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.start-overlay h3 {
+    font-size: 2.5rem;
+    font-family: var(--font-heading);
+    color: var(--accent-red);
+    text-transform: uppercase;
+    font-style: italic;
+    text-align: center;
+}
+
+/* Custom Modal */
+.modal-content {
+    background: var(--glass-bg);
+    border: 1px solid var(--accent-red);
+    padding: 3rem;
+    border-radius: 8px;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 10px 30px rgba(225, 6, 0, 0.2);
+}
+
+.modal-content input {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--text-secondary);
+    color: var(--text-primary);
+    font-size: 3rem;
+    font-family: var(--font-heading);
+    text-align: center;
+    width: 150px;
+    margin: 2rem 0;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.modal-content input:focus {
+    border-bottom-color: var(--accent-red);
+}
+
+.aim-area {
+    display: block;
+    /* override flex */
+}
+
+/* The Fly Target */
+.target {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    cursor: crosshair;
+    transform: translate(-50%, -50%) scale(0);
+    animation: popIn 0.1s ease-out forwards, jitter 0.1s infinite alternate;
+
+    /* Beautiful minimalist fly using SVG Data URI */
+    background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="%23ffffff"><path d="M12 2C10.89 2 10 2.89 10 4V4.5C8.89 5.25 8 6.54 8 8C8 8.07 8.01 8.14 8.01 8.21C6.18 8.5 4 10.15 4 12C4 13.9 6.56 14.54 8.28 14.15C8.89 15.65 10.3 16.79 12 16.96V20H10V22H14V20H12V16.96C13.7 16.79 15.11 15.65 15.72 14.15C17.44 14.54 20 13.9 20 12C20 10.15 17.82 8.5 15.99 8.21C15.99 8.14 16 8.07 16 8C16 6.54 15.11 5.25 14 4.5V4C14 2.89 13.11 2 12 2M12 4C12.55 4 13 4.45 13 5S12.55 6 12 6S11 5.55 11 5S11.45 4 12 4M6.71 10.04C7.81 9.4 8.91 9.1 9.5 9.16C9.55 9.42 9.61 9.69 9.69 9.95C8.36 10.8 7 11.23 6 11.23C6 10.96 6.24 10.42 6.71 10.04M17.29 10.04C17.76 10.42 18 10.96 18 11.23C17 11.23 15.64 10.8 14.31 9.95C14.39 9.69 14.45 9.42 14.5 9.16C15.09 9.1 16.19 9.4 17.29 10.04Z"/></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.target.moving {
+    transition: left 2s ease-in-out, top 2s ease-in-out, transform 0.2s, opacity 0.2s;
+    animation: none;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.cpss-settings input {
+    accent-color: var(--accent-red);
+    cursor: pointer;
+}
+
+@keyframes jitter {
+    0% {
+        transform: translate(calc(-50% - 2px), calc(-50% - 2px)) scale(1);
+    }
+
+    100% {
+        transform: translate(calc(-50% + 2px), calc(-50% + 2px)) scale(1);
+    }
+}
+
+@keyframes popIn {
+    to {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.aim-stats {
+    display: flex;
+    gap: 1rem;
+}
+
+.stat-badge {
+    background: var(--glass-highlight);
+    border: 1px solid var(--accent-red);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-family: var(--font-heading);
+}
+
+.stat-badge span {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-family: monospace;
+    font-size: 1.1rem;
+}
+
+/* Speed Trap Specific */
+.speedtrap-area {
+    background: #222;
+    display: block;
+    /* Override flex */
+    position: relative;
+}
+
+.track-strip {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    transform: translateY(-50%);
+    background: #333;
+    border-top: 2px dashed #666;
+    border-bottom: 2px dashed #666;
+    z-index: 1;
+}
+
+.drs-zone {
+    position: absolute;
+    top: 50%;
+    left: 70%;
+    /* DRS Zone is at 70% of the screen width */
+    width: 100px;
+    height: 100px;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 255, 0, 0.2);
+    border-left: 4px solid var(--accent-green);
+    border-right: 4px solid var(--accent-green);
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.drs-text {
+    font-family: var(--font-heading);
+    color: var(--accent-green);
+    font-size: 1.5rem;
+    font-weight: bold;
+    opacity: 0.5;
+}
+
+.car {
+    position: absolute;
+    top: 50%;
+    left: -100px;
+    /* Start off screen */
+    transform: translateY(-50%);
+    font-size: 4rem;
+    z-index: 3;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5));
+}
+
+.speedtrap-prompt {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 4;
+}
+
+.speedtrap-prompt h3 {
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    font-style: italic;
+}
+
+.speedtrap-prompt p {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+}
+
+/* Dashboard Sidebar Elements */
+.dashboard-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Leaderboards */
+.leaderboard-grids {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.leaderboard-grids h3 {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    color: var(--accent-red);
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 0.25rem;
+}
+
+.leaderboard-grids ul {
+    list-style: none;
+    font-family: monospace;
+    font-size: 1rem;
+}
+
+.leaderboard-grids li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25rem 0;
+    color: var(--text-secondary);
+}
+
+.lb-pos {
+    color: var(--text-primary);
+    font-weight: bold;
+    width: 30px;
+}
+
+.lb-name {
+    flex-grow: 1;
+    text-align: left;
+    padding-left: 1rem;
+    color: var(--text-primary);
+}
+
+.lb-score {
+    color: var(--accent-white);
+    font-weight: bold;
+}
+
+/* Rain Distraction Toggle */
+.header-controls {
+    display: flex;
+    gap: 1rem;
+}
+
+.rain-btn {
+    background: transparent;
+    border: 2px solid var(--text-secondary);
+    color: var(--text-secondary);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.rain-btn.wet {
+    border-color: #0088ff;
+    color: #0088ff;
+    background: rgba(0, 136, 255, 0.1);
+}
+
+/* Rain Distraction Effect CSS Only */
+body.rain-session::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
+    background-size: 5px 200px;
+    animation: rainDrop 0.5s linear infinite;
+    opacity: 0.5;
+}
+
+@keyframes rainDrop {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 5px 1000px;
+    }
+}
+
+@media (max-width: 900px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .app-container {
+        padding: 1rem;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    header {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .logo {
+        font-size: 2rem;
+    }
+
+    .game-area {
+        min-height: 400px;
+    }
+
+    .card {
+        padding: 1.5rem;
+    }
+
+    .card h2 {
+        font-size: 1.5rem;
+    }
+
+    .card-icon {
+        font-size: 2.5rem;
+    }
+
+    /* Reaction */
+    #reaction-title {
+        font-size: 2rem;
+    }
+
+    .reaction-prompt .icon {
+        font-size: 3rem;
+    }
+
+    /* Aim */
+    .target {
+        width: 70px;
+        height: 70px;
+    }
+
+    /* larger for touch */
+    .game-header h2 {
+        font-size: 1.5rem;
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+
+    .aim-stats {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .back-btn {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    /* Speed Trap */
+    .speedtrap-prompt h3 {
+        font-size: 2rem;
+    }
+
+    .speedtrap-prompt p {
+        font-size: 1.2rem;
+    }
+
+    .car {
+        font-size: 3rem;
+    }
+
+    .drs-zone {
+        width: 70px;
+        height: 100%;
+    }
+
+    /* taller but narrower zone */
+
+    .start-overlay h3 {
+        font-size: 1.8rem;
+        padding: 0 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .logo {
+        font-size: 1.8rem;
+    }
+
+    .rain-btn {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .drs-zone {
+        left: 80%;
+        width: 50px;
+    }
+
+    /* Shift further right to give more reaction time on very small screens */
+    .start-overlay h3 {
+        font-size: 1.5rem;
+    }
+}
+
+/* OnePlus Nord & Similar Devices (412x915px CSS viewport, 20:9 ratio) */
+@media (max-width: 420px),
+(max-device-width: 412px) and (max-device-height: 915px) {
+    .app-container {
+        padding: 0.5rem;
+        /* Maximize screen real estate */
+    }
+
+    .hero h1 {
+        font-size: 1.8rem;
+        /* Fit tight width */
+        margin-bottom: 0.5rem;
+    }
+
+    header {
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .logo {
+        font-size: 1.5rem;
+    }
+
+    .card {
+        padding: 1rem;
+    }
+
+    .game-area {
+        min-height: 350px;
+        /* fit within the long vertical scroll */
+    }
+
+    #reaction-title {
+        font-size: 1.5rem;
+    }
+
+    .target {
+        width: 60px;
+        /* Perfect thumb size for 412px width */
+        height: 60px;
+    }
+
+    .speedtrap-prompt h3 {
+        font-size: 1.5rem;
+    }
+
+    .car {
+        font-size: 2.5rem;
+    }
+}
+
+/* Rank Badge */
+.rank-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    background: var(--glass-bg);
+    border: 1px solid var(--text-secondary);
+}
+
+.rank-badge .rank-icon {
+    font-size: 1.2rem;
+}
+
+.rank-badge.rookie {
+    border-color: #cd7f32;
+    /* Bronze */
+    color: #cd7f32;
+    background: rgba(205, 127, 50, 0.1);
+}
+
+.rank-badge.contender {
+    border-color: #c0c0c0;
+    /* Silver */
+    color: #c0c0c0;
+    background: rgba(192, 192, 192, 0.1);
+}
+
+.rank-badge.champion {
+    border-color: #ffd700;
+    /* Gold */
+    color: #ffd700;
+    background: rgba(255, 215, 0, 0.1);
+}
+
+.rank-badge.unranked {
+    border-color: var(--text-secondary);
+    color: var(--text-secondary);
+}
+
+/* F1 Start Lights */
+.lights-container {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 1rem 2rem;
+    background: #000;
+    border-radius: 8px;
+    border-top: 4px solid #333;
+    border-bottom: 4px solid #333;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}
+
+.lights-container.hidden {
+    display: none;
+}
+
+.light-pod {
+    width: 60px;
+    height: 60px;
+    background: #1a1a1a;
+    border-radius: 50%;
+    border: 3px solid #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.light {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    transition: all 0.1s ease;
+}
+
+.light.off {
+    background: #3a0a0a;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.light.on {
+    background: #ff0000;
+    box-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000, inset 0 0 10px #fff;
+}
+
+/* Race Engineer Popup */
+.engineer-radio {
+    position: fixed;
+    bottom: 20px;
+    right: -400px;
+    /* Start hidden off-screen */
+    width: 320px;
+    background: rgba(0, 0, 0, 0.9);
+    border-left: 5px solid var(--accent-red);
+    color: white;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-radius: 4px;
+    font-family: var(--font-body);
+    box-shadow: -5px 5px 20px rgba(0, 0, 0, 0.5);
+    transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 1000;
+}
+
+.engineer-radio.show {
+    right: 20px;
+}
+
+.engineer-icon {
+    font-size: 2.5rem;
+}
+
+.engineer-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.engineer-text strong {
+    font-family: var(--font-heading);
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.engineer-text span {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Pit Stop Challenge Specific */
+.pitstop-area {
+    background: #2a2a2a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.pitstop-car {
+    position: relative;
+    width: 140px;
+    height: 300px;
+}
+
+.pitstop-chassis {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 250px;
+    background: var(--accent-red);
+    border-radius: 20px 20px 10px 10px;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5), 0 10px 20px rgba(0, 0, 0, 0.6);
+}
+
+.pitstop-chassis::before {
+    content: '';
+    position: absolute;
+    top: 30%;
+    left: 10%;
+    width: 80%;
+    height: 30%;
+    background: #111;
+    border-radius: 20px;
+}
+
+.tire {
+    position: absolute;
+    width: 40px;
+    height: 60px;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 5px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+    cursor: pointer;
+    transition: transform 0.1s;
+    user-select: none;
+}
+
+.tire.active {
+    border-color: var(--accent-green);
+    box-shadow: 0 0 15px var(--accent-green), inset 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.tire.done {
+    border-color: #555;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.tire:active {
+    transform: scale(0.95);
+}
+
+.front-left {
+    top: 40px;
+    left: 0;
+}
+
+.front-right {
+    top: 40px;
+    right: 0;
+}
+
+.rear-left {
+    bottom: 40px;
+    left: 0;
+}
+
+.rear-right {
+    bottom: 40px;
+    right: 0;
+}
+
+.pitstop-color {
+    color: #ffd700;
+}
+
+.pitstop-prompt {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.pitstop-prompt.show {
+    opacity: 1;
+}
+
+.pitstop-prompt h3 {
+    font-family: var(--font-heading);
+    font-size: 3.5rem;
+    color: var(--accent-green);
+    margin-bottom: 0px;
+    line-height: 1;
+}
+
+.pitstop-prompt p {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+}
