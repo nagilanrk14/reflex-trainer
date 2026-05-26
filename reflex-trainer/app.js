@@ -135,41 +135,69 @@ const app = {
         const newSubmitBtn = submitBtn.cloneNode(true);
         submitBtn.parentNode.replaceChild(newSubmitBtn, submitBtn);
 
-        newSubmitBtn.addEventListener('click', () => {
+        newSubmitBtn.addEventListener('click', async () => {
             const initials = input.value.trim().substring(0, 3).toUpperCase() || 'VER';
-            this.leaderboards[game].push({ initials, score: newScore });
-
-            // Sort the leaderboard
+            const rank = document.getElementById('rank-text').textContent || 'UNRANKED';
+            
+            // Optimistically update local UI
+            this.leaderboards[game] = this.leaderboards[game] || [];
+            this.leaderboards[game].push({ initials, score: newScore, rank });
             this.leaderboards[game].sort((a, b) => {
                 return lowerIsBetter ? a.score - b.score : b.score - a.score;
             });
-
-            // Keep top 5
             if (this.leaderboards[game].length > 5) {
                 this.leaderboards[game] = this.leaderboards[game].slice(0, 5);
             }
+            
+            // Insert into Supabase
+            const { data, error } = await supabase
+                .from('leaderboards')
+                .insert([
+                    { game: game, initials: initials, score: newScore, rank: rank }
+                ]);
+                
+            if (error) {
+                console.error("Error saving to Supabase:", error);
+            }
 
-            localStorage.setItem(`lb-${game}`, JSON.stringify(this.leaderboards[game]));
-            this.renderLeaderboards();
+            await this.renderLeaderboards();
             modal.classList.add('hidden');
         });
     },
 
-    renderLeaderboards() {
+    async renderLeaderboards() {
         const createLbHtml = (arr) => {
-            if (arr.length === 0) return '<li>No times posted yet</li>';
+            if (!arr || arr.length === 0) return '<li>No times posted yet</li>';
             return arr.map((entry, index) =>
-                `<li><span class="lb-pos">P${index + 1}</span> <span class="lb-name">${entry.initials}</span> <span class="lb-score">${entry.score}ms</span></li>`
+                `<li><span class="lb-pos">P${index + 1}</span> <span class="lb-name" title="${entry.rank || ''}">${entry.initials}</span> <span class="lb-score">${entry.score}ms</span></li>`
             ).join('');
         };
 
-        const rLb = document.getElementById('lb-reaction-list');
-        const aLb = document.getElementById('lb-aim-list');
-        const sLb = document.getElementById('lb-speedtrap-list');
+        const games = ['reaction', 'aim', 'speedtrap', 'pitstop'];
+        
+        for (const game of games) {
+            // Determine sort order (lower is better for all current minigames)
+            const ascending = true;
+            
+            try {
+                const { data, error } = await supabase
+                    .from('leaderboards')
+                    .select('*')
+                    .eq('game', game)
+                    .order('score', { ascending: ascending })
+                    .limit(5);
 
-        if (rLb) rLb.innerHTML = createLbHtml(this.leaderboards.reaction);
-        if (aLb) aLb.innerHTML = createLbHtml(this.leaderboards.aim);
-        if (sLb) sLb.innerHTML = createLbHtml(this.leaderboards.speedtrap);
+                if (!error && data) {
+                    this.leaderboards[game] = data;
+                    const listEl = document.getElementById(`lb-${game}-list`);
+                    if (listEl) {
+                        listEl.innerHTML = createLbHtml(data);
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to fetch leaderboard for " + game, err);
+            }
+        }
     },
 
     updateDashboardStats() {
