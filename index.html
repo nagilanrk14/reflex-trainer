@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reflex & Aim Trainer</title>
+    <meta name="description"
+        content="Improve your reaction time and hand-eye coordination with premium training minigames.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Local Background Video -->
+    <video autoplay loop muted playsinline id="f1-bg-video">
+        <source src="background.mp4" type="video/mp4">
+    </video>
+
+    <div class="background-elements">
+        <!-- Dark carbon overlay to ensure text remains readable -->
+        <div class="carbon-texture"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header>
+            <div class="logo" id="home-btn" style="cursor: pointer;">
+                <span class="highlight">F1</span>Telemetry
+            </div>
+            <div class="header-controls">
+                <div id="driver-rank-badge" class="rank-badge unranked">
+                    <span class="rank-icon">👑</span>
+                    <span id="rank-text">UNRANKED</span>
+                </div>
+                <button id="rain-toggle" class="rain-btn">SESSION: DRY (SLICKS)</button>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main id="main-content">
+
+            <!-- Dashboard View -->
+            <section id="view-dashboard" class="view active">
+                <div class="hero">
+                    <h1>RACE <span class="highlight">PERFORMANCE</span></h1>
+                    <p>Track your Grid Start reaction and Fly Swatter precision over time.</p>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="game-cards">
+                        <!-- Reaction Game Card -->
+                        <div class="card" onclick="app.loadView('view-reaction')">
+                            <div class="card-icon reaction-color">🚥</div>
+                            <h2>Grid Start</h2>
+                            <p>Wait for the lights to go out. Measure your raw reflexes.</p>
+                            <div class="stats">
+                                <span>Best time: <strong id="best-reaction">-</strong> ms</span>
+                            </div>
+                        </div>
+
+                        <!-- Pit Stop Card -->
+                        <div class="card" onclick="app.loadView('view-pitstop')">
+                            <div class="card-icon pitstop-color">🔧</div>
+                            <h2>Pit Stop</h2>
+                            <p>Change 4 tires as fast as possible. Sequential clicking challenge.</p>
+                            <div class="stats">
+                                <span>Best time: <strong id="best-pitstop">-</strong> ms</span>
+                            </div>
+                        </div>
+
+                        <!-- Aim Trainer Card -->
+                        <div class="card" onclick="app.loadView('view-aim')">
+                            <div class="card-icon aim-color">🪰</div>
+                            <h2>Fly Swatter</h2>
+                            <p>Swat 10 flies. Track Limits enforced: 500ms penalty for missing the fly!</p>
+                            <div class="stats">
+                                <span>Best avg: <strong id="best-aim">-</strong> ms/hit</span>
+                            </div>
+                        </div>
+
+                        <!-- Speed Trap Card -->
+                        <div class="card" onclick="app.loadView('view-speedtrap')">
+                            <div class="card-icon speedtrap-color">🏎️</div>
+                            <h2>Speed Trap</h2>
+                            <p>Anticipate the DRS zone. Click exactly when the car crosses the line.</p>
+                            <div class="stats">
+                                <span>Best offset: <strong id="best-speedtrap">-</strong> ms</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Telemetry Graph & Leaderboards -->
+                    <div class="dashboard-sidebar">
+                        <div class="telemetry-card card">
+                            <h2>Performance History</h2>
+                            <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                                <button id="fatigue-btn" class="back-btn"
+                                    style="font-size: 0.8rem; padding: 0.3rem 0.6rem;">Generate Fatigue Report</button>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="telemetryChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Leaderboard Card -->
+                        <div class="leaderboard-card card">
+                            <h2>Track Records</h2>
+                            <div class="leaderboard-grids">
+                                <div>
+                                    <h3>Grid Start</h3>
+                                    <ul id="lb-reaction-list"></ul>
+                                </div>
+                                <div>
+                                    <h3>Fly Swatter</h3>
+                                    <ul id="lb-aim-list"></ul>
+                                </div>
+                                <div>
+                                    <h3>Speed Trap</h3>
+                                    <ul id="lb-speedtrap-list"></ul>
+                                </div>
+                                <div>
+                                    <h3>Pit Stop</h3>
+                                    <ul id="lb-pitstop-list"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reaction Time View -->
+            <section id="view-reaction" class="view">
+                <div class="game-header">
+                    <button class="back-btn" onclick="app.loadView('view-dashboard')">← PADDOCK</button>
+                    <div class="cpss-settings" style="display: flex; gap: 15px; font-size: 0.8em;">
+                        <label><input type="checkbox" id="cpss-math-toggle"> Cognitive Load</label>
+                        <label><input type="checkbox" id="cpss-audio-toggle"> Audio Cue</label>
+                    </div>
+                    <h2>GRID <span class="highlight">START</span></h2>
+                </div>
+
+                <div class="game-area" id="reaction-area">
+                    <div id="start-lights-container" class="lights-container hidden">
+                        <div class="light-pod">
+                            <div class="light off"></div>
+                        </div>
+                        <div class="light-pod">
+                            <div class="light off"></div>
+                        </div>
+                        <div class="light-pod">
+                            <div class="light off"></div>
+                        </div>
+                        <div class="light-pod">
+                            <div class="light off"></div>
+                        </div>
+                        <div class="light-pod">
+                            <div class="light off"></div>
+                        </div>
+                    </div>
+
+                    <div class="reaction-prompt" id="reaction-prompt">
+                        <span class="icon" id="reaction-icon">🚥</span>
+                        <h3 id="reaction-title">Click to Stage</h3>
+                        <p id="reaction-desc">Wait for the lights to go out!</p>
+
+                        <div id="math-problem-container" class="hidden" style="margin-top: 20px;">
+                            <h2 id="math-problem-text">14 + 7 = ?</h2>
+                            <input type="number" id="math-answer-input" placeholder="Enter answer..."
+                                style="margin-top: 10px; padding: 5px; font-size: 1.2rem; text-align: center; width: 100px;">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Aim Trainer View -->
+            <section id="view-aim" class="view">
+                <div class="game-header">
+                    <button class="back-btn" onclick="app.loadView('view-dashboard')">← PADDOCK</button>
+                    <div class="aim-stats">
+                        <div class="stat-badge">Flies: <span id="aim-remaining">10</span></div>
+                        <div class="stat-badge">Avg: <span id="aim-avg">0</span> ms</div>
+                    </div>
+                    <h2>FLY <span class="highlight">SWATTER</span></h2>
+                </div>
+
+                <div class="game-area-wrapper">
+                    <div id="aim-start-overlay" class="start-overlay" onclick="aimGame.start()">
+                        <h3>Click to Start Swatting</h3>
+                    </div>
+                    <div class="game-area aim-area" id="aim-area">
+                        <!-- Targets injected here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Speed Trap View -->
+            <section id="view-speedtrap" class="view">
+                <div class="game-header">
+                    <button class="back-btn" onclick="app.loadView('view-dashboard')">← PADDOCK</button>
+                    <h2>SPEED <span class="highlight">TRAP</span></h2>
+                </div>
+
+                <div class="game-area-wrapper">
+                    <div id="speedtrap-overlay" class="start-overlay" onclick="speedTrapGame.start()">
+                        <h3>Click to Start Sector</h3>
+                    </div>
+                    <div class="game-area speedtrap-area" id="speedtrap-area">
+                        <div class="track-strip"></div>
+                        <div class="drs-zone" id="speedtrap-zone">
+                            <span class="drs-text">DRS</span>
+                        </div>
+                        <div class="car" id="speedtrap-car">🏎️</div>
+
+                        <div class="speedtrap-prompt" id="speedtrap-prompt">
+                            <h3 id="speedtrap-title">SPEED TRAP</h3>
+                            <p id="speedtrap-stat">- ms diff</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pit Stop View -->
+            <section id="view-pitstop" class="view">
+                <div class="game-header">
+                    <button class="back-btn" onclick="app.loadView('view-dashboard')">← PADDOCK</button>
+                    <div class="aim-stats">
+                        <div class="stat-badge">Tires: <span id="pitstop-remaining">4</span></div>
+                    </div>
+                    <h2>PIT <span class="highlight">STOP</span></h2>
+                </div>
+
+                <div class="game-area-wrapper">
+                    <div id="pitstop-overlay" class="start-overlay" onclick="pitstopGame.start()">
+                        <h3>Click to Box</h3>
+                    </div>
+                    <div class="game-area pitstop-area" id="pitstop-area">
+                        <!-- Top down car view -->
+                        <div class="pitstop-car">
+                            <div class="pitstop-chassis"></div>
+
+                            <!-- 4 interactive tires -->
+                            <div class="tire front-left" id="tire-fl" onclick="pitstopGame.hitTire('fl')"></div>
+                            <div class="tire front-right" id="tire-fr" onclick="pitstopGame.hitTire('fr')"></div>
+                            <div class="tire rear-left" id="tire-rl" onclick="pitstopGame.hitTire('rl')"></div>
+                            <div class="tire rear-right" id="tire-rr" onclick="pitstopGame.hitTire('rr')"></div>
+                        </div>
+
+                        <div class="pitstop-prompt" id="pitstop-prompt">
+                            <h3 id="pitstop-title">2.1s</h3>
+                            <p id="pitstop-desc">Excellent stop</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Race Engineer Radio Popup -->
+    <div id="engineer-radio" class="engineer-radio">
+        <div class="engineer-icon">📻</div>
+        <div class="engineer-text">
+            <strong>RACE ENGINEER</strong>
+            <span id="engineer-msg">Track limits, mate.</span>
+        </div>
+    </div>
+
+    <!-- Custom Initials Modal -->
+    <div id="initials-modal" class="start-overlay hidden" style="z-index: 9999;">
+        <div class="modal-content">
+            <h3>NEW TRACK RECORD</h3>
+            <p id="modal-desc">You set a new best time! Enter your 3 initials:</p>
+            <input type="text" id="initials-input" maxlength="3" placeholder="VER" autocomplete="off"
+                style="text-transform: uppercase;">
+            <button id="initials-submit" class="back-btn" style="margin-top: 1rem;">SAVE RECORD</button>
+            <button id="initials-cancel" class="back-btn"
+                style="margin-top: 1rem; border-color: #666; color: #666;">SKIP</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabaseClient.js"></script>
+    
+    <script src="sounds.js"></script>
+    <script src="games/reaction.js"></script>
+    <script src="games/aim.js"></script>
+    <script src="games/speedtrap.js"></script>
+    <script src="games/pitstop.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
