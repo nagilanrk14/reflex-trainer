@@ -149,12 +149,13 @@ const app = {
                 this.leaderboards[game] = this.leaderboards[game].slice(0, 5);
             }
             
-            // Insert into Supabase
-           const { data, error } = await window.supabaseClient
+                        // Insert into Supabase
+            const { data, error } = await window.supabaseClient
                 .from('leaderboards')
                 .insert([
                     { game: game, initials: initials, score: newScore, rank: rank }
                 ]);
+           
                 
             if (error) {
                 console.error("Error saving to Supabase:", error);
@@ -179,14 +180,13 @@ const app = {
             // Determine sort order (lower is better for all current minigames)
             const ascending = true;
             
-            try {
+                     try {
                 const { data, error } = await window.supabaseClient
-                    const { data, error } = await window.supabaseClient
+                    .from('leaderboards')
                     .select('*')
                     .eq('game', game)
                     .order('score', { ascending: ascending })
                     .limit(5);
-
                 if (!error && data) {
                     this.leaderboards[game] = data;
                     const listEl = document.getElementById(`lb-${game}-list`);
