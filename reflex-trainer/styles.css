@@ -579,10 +579,26 @@ body.penalty-flash .game-area {
 }
 
 /* Dashboard Sidebar Elements */
+/* Update this in your styles.css */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 350px; /* This creates the two columns */
+    gap: 2rem;
+    align-items: start; /* Keeps the sidebar at the top */
+}
+
 .dashboard-sidebar {
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    width: 100%; /* Ensures it fills its column */
+}
+
+/* Optional: Make it stack on mobile screens */
+@media (max-width: 900px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Leaderboards */
