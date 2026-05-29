@@ -150,7 +150,7 @@ const app = {
             }
             
             // Insert into Supabase
-            const { data, error } = await supabase
+            const { data, error } = await window.supabaseClient
                 .from('leaderboards')
                 .insert([
                     { game: game, initials: initials, score: newScore, rank: rank }
@@ -180,7 +180,7 @@ const app = {
             const ascending = true;
             
             try {
-                const { data, error } = await supabase
+                const { data, error } = await window.supabaseClient
                     .from('leaderboards')
                     .select('*')
                     .eq('game', game)
