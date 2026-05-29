@@ -150,7 +150,7 @@ const app = {
             }
             
             // Insert into Supabase
-            await window.supabaseClient
+            const { data, error } = await window.supabaseClient
                 .from('leaderboards')
                 .insert([
                     { game: game, initials: initials, score: newScore, rank: rank }
@@ -180,8 +180,8 @@ const app = {
             const ascending = true;
             
             try {
-                const { data, error } = await supabase
-                   await window.supabaseClient
+                const { data, error } = await window.supabaseClient
+                    .from('leaderboards')
                     .select('*')
                     .eq('game', game)
                     .order('score', { ascending: ascending })
@@ -439,3 +439,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { once: true });
     }
 });
+
+           
+         
